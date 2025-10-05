@@ -1,4 +1,4 @@
-FILE_NAME = 'C:\\Users\\nenel\\Downloads\\sbdb_query_results (2).csv' 
+FILE_NAME = 'sbdb_query_results (2).csv' 
 import pandas as pd
 import numpy as np
 import re
@@ -359,4 +359,5 @@ def update_figure(selected_diameter_range, selected_year_range, selected_ps_rang
 
 if __name__ == '__main__':
     app.index_string = CUSTOM_INDEX_STRING 
+
     app.run()
