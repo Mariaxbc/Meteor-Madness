@@ -1,4 +1,4 @@
-FILE_NAME = 'sbdb_query_results (2).csv' 
+FILE_NAME = 'C:\\Users\\nenel\\Downloads\\sbdb_query_results (2).csv' 
 import pandas as pd
 import numpy as np
 import re
@@ -103,9 +103,9 @@ def calculate_asteroid_position(row):
 
 def get_ps_color(ps_value):
     if pd.isna(ps_value): return '#7f8c8d'
-    if ps_value >= -4.0: return '#e74c3c'
-    elif ps_value >= -8.0: return '#f1c40f'
-    else: return '#2ecc71'
+    if ps_value >= -4.0: return "#e30000"
+    elif ps_value >= -8.0: return "#00aaff"
+    else: return "#12d907"
 
 
 # --- FUNÇÃO CRÍTICA DE CARREGAMENTO DE DADOS (REVISADA) ---
@@ -162,10 +162,13 @@ def get_initial_data(file_path_arg, num_rows=150):
     x_sun_geocentric = 0.0 - EARTH_POSITION_HELIOCENTRIC[0]; y_sun_geocentric = 0.0 - EARTH_POSITION_HELIOCENTRIC[1]; z_sun_geocentric = 0.0 - EARTH_POSITION_HELIOCENTRIC[2]
 
     traces.extend([
-        go.Scatter3d(x=x_earth_orb_geocentric, y=y_earth_orb_geocentric, z=z_earth_orb_geocentric, mode='lines', line=dict(color='blue', dash='dash'), name='Órbita da Terra', hoverinfo='none', customdata=[['reference']], showlegend=True),
-        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(color='blue', size=5), name='Terra', hoverinfo='none', customdata=[['reference']], showlegend=True),
-        go.Scatter3d(x=[x_sun_geocentric], y=[y_sun_geocentric], z=[z_sun_geocentric], mode='markers', marker=dict(color='orange', size=8), name='Sol', hoverinfo='none', customdata=[['reference']], showlegend=True),
-        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(size=1, color='pink'), name='Órbitas de Asteroides', showlegend=True)
+        go.Scatter3d(x=x_earth_orb_geocentric, y=y_earth_orb_geocentric, z=z_earth_orb_geocentric, mode='lines', line=dict(color='blue', dash='dash'), name='Earth Orbit', hoverinfo='none', customdata=[['reference']], showlegend=True),
+        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(color='blue', size=16), name='Earth', hoverinfo='none', customdata=[['reference']], showlegend=True),
+        go.Scatter3d(x=[x_sun_geocentric], y=[y_sun_geocentric], z=[z_sun_geocentric], mode='markers', marker=dict(color='orange', size=30), name='Sun', hoverinfo='none', customdata=[['reference']], showlegend=True),
+        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(size=1, color='pink'), name='Orbit of NEO', showlegend=True),
+        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(size=7, color="#eb2009"), name='PS 0 → -4', showlegend=True),
+        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(size=7, color='#0fc4f1'), name='PS -5 → -8', showlegend=True),
+        go.Scatter3d(x=[0], y=[0], z=[0], mode='markers', marker=dict(size=7, color='#2ecc71'), name='PS < -8', showlegend=True)
     ])
 
 
@@ -192,21 +195,21 @@ def get_initial_data(file_path_arg, num_rows=150):
 
             # Trace da Órbita do Asteroide (linha)
             traces.append(go.Scatter3d(
-                x=x_orbit_g, y=y_orbit_g, z=z_orbit_g, mode='lines', line=dict(width=1.5, color='pink'), name=f"Órbita {trace_name}",
+                x=x_orbit_g, y=y_orbit_g, z=z_orbit_g, mode='lines', line=dict(width=1.5, color="#8E5E94"), name=f"Órbita {trace_name}",
                 customdata=[trace_data], 
                 # --- HOVER TEMPLATE COMPLETO (FINAL) ---
                 hovertemplate=(
-                    f"Órbita: {trace_name}<br>Diâmetro (m): {diameter_text}<br>"
-                    f"Risco (PS max): {row['PS max']:.2f}<br>"
-                    f"Classe: {row['class']}<br>"
-                    f"Primeira Obs: {row['first_obs']}<br>"
-                    f"Última Obs: {row['last_obs']}<br>"
-                    f"Impacto: {row['Impact_Date']}<br>"
-                    f"Velocidade: {row['Velocity']:.2f} km/s<br>"
-                    f"--- ZONAS DE DESTRUIÇÃO (Simuladas) ---<br>"
-                    f"Cratera Estimada: {row['Cratera_km']:.2f} km<br>"
-                    f"Destruição Total: {row['Zona_Total_km']:.2f} km<br>"
-                    f"Destruição Parcial: {row['Zona_Parcial_km']:.2f} km<extra></extra>"
+                    f"Orbit of: {trace_name}<br>Diameter (m): {diameter_text}<br>"
+                    f"Risk (PS max): {row['PS max']:.2f}<br>"
+                    f"Class: {row['class']}<br>"
+                    f"First Obs: {row['first_obs']}<br>"
+                    f"Last Obs: {row['last_obs']}<br>"
+                    f"Probably impact date: {row['Impact_Date']}<br>"
+                    f"Velocity: {row['Velocity']:.2f} km/s<br>"
+                    f"--- Destruction Zones (Simulated) ---<br>"
+                    f"Estimated crater: {row['Cratera_km']:.2f} km<br>"
+                    f"Total Destruction Area: {row['Zona_Total_km']:.2f} km<br>"
+                    f"Partial Destruction Area: {row['Zona_Parcial_km']:.2f} km<extra></extra>"
                 ),
                 visible=True, showlegend=False 
             ))
@@ -216,17 +219,17 @@ def get_initial_data(file_path_arg, num_rows=150):
                 x=[x_pos_g], y=[y_pos_g], z=[z_pos_g], mode='markers', marker=dict(size=6, color=marker_color, symbol='circle'),
                 name=f"POSIÇÃO {trace_name}", customdata=[trace_data],
                 hovertemplate=(
-                    f"POSIÇÃO: {trace_name}<br>Diâmetro (m): {diameter_text}<br>"
-                    f"Risco (PS max): {row['PS max']:.2f}<br>"
+                    f"Name: {trace_name}<br>Diameter (m): {diameter_text}<br>"
+                    f"Risk (PS max): {row['PS max']:.2f}<br>"
                     f"Classe: {row['class']}<br>"
-                    f"Primeira Obs: {row['first_obs']}<br>"
-                    f"Última Obs: {row['last_obs']}<br>"
-                    f"Impacto: {row['Impact_Date']}<br>"
-                    f"Velocidade: {row['Velocity']:.2f} km/s<br>"
-                    f"--- ZONAS DE DESTRUIÇÃO (Simuladas) ---<br>"
-                    f"Cratera Estimada: {row['Cratera_km']:.2f} km<br>"
-                    f"Destruição Total: {row['Zona_Total_km']:.2f} km<br>"
-                    f"Destruição Parcial: {row['Zona_Parcial_km']:.2f} km<extra></extra>"
+                    f"First Obs: {row['first_obs']}<br>"
+                    f"Last Obs: {row['last_obs']}<br>"
+                    f"Probably impact date: {row['Impact_Date']}<br>"
+                    f"Velocity: {row['Velocity']:.2f} km/s<br>"
+                    f"--- Destruction Zones (Simulated) ---<br>"
+                    f"Estimated crater: {row['Cratera_km']:.2f} km<br>"
+                    f"Total Destruction Area: {row['Zona_Total_km']:.2f} km<br>"
+                    f"Partial Destruction Area: {row['Zona_Parcial_km']:.2f} km<extra></extra>"
                 ),
                 visible=True, showlegend=False 
             ))
@@ -238,7 +241,7 @@ def get_initial_data(file_path_arg, num_rows=150):
 
 # --- INICIALIZAÇÃO E APLICAÇÃO DASH (Mantida) ---
 
-ASTEROID_TRACES, ASTEROID_DF, MAX_ORBIT_EXTENT = get_initial_data(FILE_NAME, num_rows=100)
+ASTEROID_TRACES, ASTEROID_DF, MAX_ORBIT_EXTENT = get_initial_data(FILE_NAME, num_rows=500)
 
 # [Configuração dos SLIDERS E LIMITES mantida]
 AXIS_LIMIT = MAX_ORBIT_EXTENT * 1.05
@@ -263,22 +266,37 @@ if pd.isna(GLOBAL_MIN_PS) or pd.isna(GLOBAL_MAX_PS): GLOBAL_MIN_PS, GLOBAL_MAX_P
 GLOBAL_MIN_PS = np.floor(GLOBAL_MIN_PS - 1); GLOBAL_MAX_PS = np.ceil(GLOBAL_MAX_PS + 1)
 SLIDER_MARKS_PS = {p: f'{p:.1f}' for p in np.arange(GLOBAL_MIN_PS, GLOBAL_MAX_PS + 0.1, 1)}
 
-
+CUSTOM_INDEX_STRING = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body style="background-color: #111111; margin: 0;"> 
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 app = dash.Dash(__name__)
-
-app.layout = html.Div(style={'backgroundColor': '#111111', 'color': 'white', 'height': '100vh', 'fontFamily': 'Arial, sans-serif'}, children=[
+app.layout = html.Div(style={'backgroundColor': "#111111", 'color': 'white', 'height': '100vh','fontFamily': 'Arial, sans-serif'}, children=[
     
-    html.H1("Visualização 3D de Órbitas de NEOs", style={'textAlign': 'center', 'paddingTop': '20px', 'marginBottom': '10px'}),
-    
+    html.H1("3D NEAs risk list orbit view", style={'textAlign': 'center', 'paddingTop': '1px', 'marginBottom': '1px'}),
     dcc.Graph(id='3d-orbit-graph', style={'height': '70vh'}, config={'displayModeBar': False}),
 
     html.Div(style={'padding': '10px 5%', 'display': 'flex', 'flex-direction': 'column', 'gap': '15px'}, children=[
         
-        html.Div(style={'flexGrow': 1}, children=[html.Label('Diâmetro (m) Min / Max:', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='diameter-slider', min=MIN_DIAM, max=MAX_DIAM, value=[MIN_DIAM, MAX_DIAM],marks=SLIDER_MARKS_D, step=1, tooltip={"placement": "bottom", "always_visible": True})]),
-        html.Div(style={'flexGrow': 1}, children=[html.Label('Ano de Queda (Intervalo de Risco):', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='year-slider', min=GLOBAL_MIN_YEAR, max=GLOBAL_MAX_YEAR, value=[GLOBAL_MIN_YEAR, GLOBAL_MAX_YEAR],marks=SLIDER_MARKS_Y, step=STEP_Y, tooltip={"placement": "bottom", "always_visible": True})]),
-        html.Div(style={'flexGrow': 1}, children=[html.Label('PS max (Escala de Palermo):', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='ps-slider', min=GLOBAL_MIN_PS, max=GLOBAL_MAX_PS, value=[GLOBAL_MIN_PS, GLOBAL_MAX_PS],marks=SLIDER_MARKS_PS, step=0.1, tooltip={"placement": "bottom", "always_visible": True})]),
+        html.Div(style={'flexGrow': 1}, children=[html.Label('Diameter (m) Min / Max:', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='diameter-slider', min=MIN_DIAM, max=MAX_DIAM, value=[MIN_DIAM, MAX_DIAM],marks=SLIDER_MARKS_D, step=1, tooltip={"placement": "bottom", "always_visible": True})]),
+        html.Div(style={'flexGrow': 1}, children=[html.Label('Predicted impact year:', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='year-slider', min=GLOBAL_MIN_YEAR, max=GLOBAL_MAX_YEAR, value=[GLOBAL_MIN_YEAR, GLOBAL_MAX_YEAR],marks=SLIDER_MARKS_Y, step=STEP_Y, tooltip={"placement": "bottom", "always_visible": True})]),
+        html.Div(style={'flexGrow': 1}, children=[html.Label('Risk Scale (Palermo Scale):', style={'fontWeight': 'bold', 'marginBottom': '5px', 'display': 'block'}),dcc.RangeSlider(id='ps-slider', min=GLOBAL_MIN_PS, max=GLOBAL_MAX_PS, value=[GLOBAL_MIN_PS, GLOBAL_MAX_PS],marks=SLIDER_MARKS_PS, step=0.1, tooltip={"placement": "bottom", "always_visible": True})]),
     ]),
-    
     html.Div(id='asteroid-info-panel', style={'padding': '10px 5%', 'borderTop': '1px solid #444', 'marginTop': '10px'})
 ])
 
@@ -340,4 +358,5 @@ def update_figure(selected_diameter_range, selected_year_range, selected_ps_rang
     return fig
 
 if __name__ == '__main__':
+    app.index_string = CUSTOM_INDEX_STRING 
     app.run()
