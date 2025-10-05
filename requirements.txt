@@ -1,0 +1,8 @@
+dash
+pandas
+numpy
+plotly
+requests
+poliastro
+astropy
+gunicorn 
